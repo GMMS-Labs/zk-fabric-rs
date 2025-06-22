@@ -15,19 +15,23 @@
 //! 4) Running protocol iterations per partition
 //! 5) Aggregating final verification output
 
+use serde::{Serialize, Deserialize};
+
 use rand::Rng;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 
 /// Wire key pair: keys corresponding to 0 and 1 values on a wire
-#[derive(Debug, Clone)]
+// #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct WireKeys {
     pub key0: Vec<u8>, // cryptographic key representing 0
     pub key1: Vec<u8>, // cryptographic key representing 1
 }
 
 /// Logical gate types supported (for simplicity)
-#[derive(Debug, Clone, Copy)]
+// #[derive(Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum GateType {
     And,
     Or,
@@ -36,7 +40,8 @@ pub enum GateType {
 }
 
 /// A Boolean gate in the circuit
-#[derive(Debug, Clone)]
+// #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Gate {
     pub gate_type: GateType,
     pub left_wire: usize,
@@ -45,7 +50,8 @@ pub struct Gate {
 }
 
 /// The Boolean circuit represented as layers (depth × width matrix)
-#[derive(Debug)]
+// #[derive(Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Circuit {
     pub depth: usize,
     pub width: usize,
@@ -55,7 +61,8 @@ pub struct Circuit {
 }
 
 /// A garbled gate: the encrypted truth table for the gate outputs
-#[derive(Debug, Clone)]
+// #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct GarbledGate {
     pub ciphertexts: Vec<Vec<u8>>, // 4 ciphertexts per 2-input gate
 }

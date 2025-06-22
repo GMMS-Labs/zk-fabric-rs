@@ -2,10 +2,9 @@
 
 a Polylithic Syntax Zero Knowledge Joint Proof System
 
-## Module 1: Polylithic Syntax Generation
+## Module I: Polylithic Syntax Generation
 
 ```
-# Polylithic Syntax Generation
 Example of a composite statement:
 `The car only starts [if] the "start" button [and] the brake pedal is pressed.`
 where [.] represents logical relationship between variables (the rest of the words in composite statement).
@@ -22,7 +21,7 @@ depending on direction of implication.
 
 Everything about it, what is Polylithic? How is it generation? pros, goals~, see the [PSG Wiki](wiki/psg.md).
 
-## Module 2: Partitioned Garbled Circuits
+## Module II: Partitioned Garbled Circuits
 
 can be divided into three categories:-
 
@@ -76,6 +75,7 @@ Note: For this prototype, we assume a trusted single-party execution where the e
 
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.84s
      Running `target/debug/zk-fabric`
+
 ✅ Dummy OT works! Bob received the correct key.
 
 ### Status So Far...
@@ -91,13 +91,56 @@ Note: For this prototype, we assume a trusted single-party execution where the e
 ```
 
 ---
-| Feature                     | Your Codebase    | Paper Spec            |
-| --------------------------- | ---------------- | --------------------- |
-| Garbled circuit generation  | ✅                | ✅                     |
-| Partitioning scheme         | ✅                | ✅                     |
-| Verifier evaluation         | ✅                | ✅                     |
-| Input wire key selection    | ✅ (dummy OT)     | ✅ (via OT)            |
-| Offline non-interactive OT  | ❌ (mocked)       | ✅                     |
-| Key publishing (DLT/public) | ❌ (skipped)      | ✅                     |
+
+| Feature                     | Your Codebase    | Paper Spec             |
+| --------------------------- | ---------------- | ---------------------- |
+| Garbled circuit generation  | ✅               | ✅                     |
+| Partitioning scheme         | ✅               | ✅                     |
+| Verifier evaluation         | ✅               | ✅                     |
+| Input wire key selection    | ✅ (dummy OT)    | ✅ (via OT)            |
+| Offline non-interactive OT  | ❌ (mocked)      | ✅                     |
+| Key publishing (DLT/public) | ❌ (skipped)     | ✅                     |
 | Result verification & abort | ⚠️ (prints only) | ✅ (abort if mismatch) |
+
 ---
+
+## Todo: Publish circuits + encrypted keys into a public_repo/ folder
+
+### ![simulation public repo](public_repo/public_repo.md)
+
+---
+
+| Feature                     | Your Codebase    | Paper Spec             |
+| --------------------------- | ---------------- | ---------------------- |
+| Garbled circuit generation  | ✅               | ✅                     |
+| Partitioning scheme         | ✅               | ✅                     |
+| Verifier evaluation         | ✅               | ✅                     |
+| Input wire key selection    | ✅ (dummy OT)    | ✅ (via OT)            |
+| Offline non-interactive OT  | ❌ (mocked)      | ✅                     |
+| Key publishing (DLT/public) | ✅ (simulated)   | ✅                     |
+| Result verification & abort | ⚠️ (prints only) | ✅ (abort if mismatch) |
+
+---
+
+### Results can be found in ![published_circuit_JSON](public_repo/published_circuit.json)
+
+## Module III: OT Aggregator Protocol
+
+| Component     | Description                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Goal**      | Aggregate results $Y_1, Y_2, ..., Y_{m-1}$ from multiple garbled partitions using a lightweight XOR-based circuit $C_m$, and verify with aggregator (David). |
+| **Form**      | Final circuit: $C_m(Y_1 \oplus X_1^m, Y_2 \oplus X_1^m, ..., Y_{m-1} \oplus X_1^m) \rightarrow Y$                                                            |
+| **Output**    | Both Alice and David agree on final decoded $y$. If they mismatch → abort.                                                                                   |
+| **Trustless** | David should verify without talking to Alice (non-interactive).                                                                                              |
+
+---
+
+# ZK-Fabric
+
+![ZK Fabric System](wiki/assets/zk-fabric.png)
+
+The zk-Fabric system introduces a novel zero-knowledge proof framework capable of handling complex semantic computations efficiently. Its modular design and protocol construction make it well-suited for distributed computing environments such as blockchains and decentralized ledgers.
+
+In this project, we have outlined and implemented the core modules and algorithms spanning from syntax parsing to partitioned garbled circuit execution, validating the practical feasibility of zk-Fabric’s approach.
+
+Moving forward, our focus will be on prototyping and testing zk-Fabric in realistic environments to benchmark its computational and resource costs against existing secure computation technologies. Additionally, rigorous theoretical security analysis will be essential to further establish the robustness of zk-Fabric schemes.
