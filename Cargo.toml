@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 sha2 = "0.10"
 rand = "0.9.1"
+# mpz = { git = "https://github.com/privacy-scaling-explorations/mpz", branch = "dev" }
+

@@ -1,4 +1,4 @@
-# Module 1 : Polylithic Syntax Generation
+# Module I : Polylithic Syntax Generation
 
 > transform a full semantic statements from a prover into a polylithic syntax logical expression with boolean operations.
 > _Polylithic is created in comparision with "Monolotihic"_  

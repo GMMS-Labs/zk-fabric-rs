@@ -1,10 +1,28 @@
 # Module II: Partitioned Garbled Circuits
 
 > Reference: Yao's Garbled Circuits basics
+> ![Yao's Garbled Circuit](assets/Fig_3-Yao'sgarbledCircuit.png)
 > Partitioning scheme for splitting circuits into multiple independent garbled circuits
-> Ensures privacy and correctness via cryptographic commitments
+> Ensures privacy and correctness via cryptographic commitments.
 
-## Goal
+### Brief
+
+- A garbled circuit is a method to "encrypt a computation",
+- that reveals only the output of the computation,
+- but reveals nothing about the inputs or any intermediate values.
+- The "circuit" is referred to a combination of logical operations on inputs and
+- The syntax is expressed as a Boolean circuit with
+- The Boolean gates, such as (AND, OR, NOT) gates in the circuit.
+
+> Yao's
+> 1 (Garbler): comprises of a method to convert a (plain) circuit 𝐶 into a garbled circuit 𝐶ˆ.
+> 2 (Encoder) comprises of a method to convert any (plain) input 𝑥 for the circuit into a garbled input 𝑥ˆ. You need the secret randomness that was used to garble the circuit
+> to encode 𝑥 into 𝑥ˆ.
+> 3 (Verifier) comprises of a method to take a garbled circuit 𝐶ˆ and garbled input 𝑥ˆ and compute the circuit output 𝐶(𝑥). Anyone can do this, you don’t have to know 𝑥 or the secret randomness inside 𝐶ˆ to evaluate and learn 𝐶(𝑥).
+
+**The main idea of security is that 𝐶ˆ and 𝑥ˆ together leak no more information than 𝐶(𝑥).**
+
+## Our Goal
 
 Securely divide the table into multiple representation of the truth table matrix `T`.
 
@@ -52,6 +70,58 @@ For security parameter `k`, garbling and evaluation satisfy:
 - You pass the Boolean circuit 𝐶 , C as a data structure (list of gates with their inputs and outputs)
 - The input values 𝑥 , x as bit arrays or boolean vectors matching input wires
 
+## Implementation
+
+easier to understand in three stages,
+
+### Preparation
+
+- inputs : `x1,x2,...,xn` where x denote multi-party Yao's Garbled Circuit in a sorted sequence
+- pair two sorted inputs together onto one boolean gates
+
+  - if odd inputs then addition of two auxiliary random values `𝑎0, 𝑎1 ∈ {0, 1}`
+    > _"In a trust setup, the auxiliaries will have to destroyed at the "toxic wastes" after being used."_
+
+  `𝐶'(𝑥1, ..., 𝑥𝑛) = 𝐶( (𝑥1, 𝑥2), ...(𝑥𝑛−1, 𝑥𝑛))` {if n is even}
+  `= 𝐶( (𝑥1, 𝑥2), ...(𝑥𝑛, (𝑎0 ⊕ 𝑎1))` {if n is odd}
+
+### Construction
+
+- for each input pairs (𝑥𝑖 , 𝑥𝑗) {where 𝑥𝑖 are input from prover and 𝑥𝑗 input from verifier}
+  - the wires and internal wires 𝑤 of the circuit, assign a pair of keys (𝑘^0𝑤 , 𝑘^1𝑤).
+- for each gate of the circuit,
+  - generate 4 ciphertexts which
+  - encrypts the corresponding key associated with the output wire
+    according to the truth table of the table `T`
+    ![Illustration of the wire assignments and the outputs](assests/Fig_4-NonInteractiveGarbledCircuitProtocol.png)
+- for each gate connected to an output wire of the circuit
+  - encode 0/1 according to the truth table
+
+### Partitioning
+
+_based on the Truth table 𝑇_,
+
+- partition the circuit matrix 𝑀 horizontally to the penultimate gate before the last aggregating gates.
+  The partitioning of garbled circuit needs some extra care _to maintain the inputs/outputs integrity_.
+- implement the partitioning with 𝑛/1 (fan-in / fan-out) ratio
+  > In partitioning with an n/1 fan-in/fan-out ratio,
+  > you're essentially dividing a large task or dataset into smaller, manageable chunks (n)
+  > that are then processed by a single entity or system (1).
+  > Specifically, the 𝑛/1 scheme requires that the leftmost input gates are partitioned per garbled logical gate, and after the first tier of inputs, the intermediate and last tier gates are aggregated into **one garbled circuit**.
+- add the partitioned garbled circuit (𝐶1, 𝐶2, ...𝐶𝑚) and
+- run the iterations of garbled circuit protocol per circuit.
+  ```
+  //this sub-step runs in iterations.
+  Alice (prover) runs the Non-interactive multiple parties OT transfer scheme
+  per partitioned circuit with multiple verifiers offline
+  to obtain the partitioned garbled circuit verification
+  `𝑌𝑖 = 𝐶𝑖(𝑥𝑖, 𝑥𝑗)`, except the last circuit 𝐶𝑚.
+  ```
+- for circuit 𝐶𝑚,
+  - it’s required to employ the module III 𝑂𝑇 − 𝑎𝑔𝑔𝑟𝑒𝑔𝑎𝑡𝑜𝑟
+  - to obtain the combined Oblivious Transfer verification
+    `𝑌 = 𝐶𝑚(𝑥𝑚) = Ð𝑚−1 𝑖=1 𝐶𝑖(𝑥𝑖, 𝑥𝑗)`
+
 The scheme uses these to:
 
 - Pair inputs into 2-input gates
@@ -59,6 +129,8 @@ The scheme uses these to:
 - Generate garbled tables per gate
 - Partition the circuit into smaller garbled circuits
 - Run oblivious transfers on each partitioned circuit
+
+![An example of 2 polylithic inputs to be ”blindly” verified by 3 offline verifiers with the construction of partitioned garbled circuits](assets/Fig_3-PartitionedgarbledCircuit.png)
 
 ## Result
 
