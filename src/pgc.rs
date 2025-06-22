@@ -1,3 +1,4 @@
+//draft to partition garbled circuits
 use rand::{RngCore, rngs::OsRng};
 use hex::encode as hex_encode;
 
